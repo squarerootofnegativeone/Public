@@ -80,6 +80,29 @@
       "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
     },
     "resources": [
+        {
+         "name": "[concat(variables('vmName'),'/', 'ConfigureNginx')]",
+         "type": "Microsoft.Compute/virtualMachines/extensions",
+         "apiVersion": "2018-06-01",
+         "location": "[parameters('location')]",
+         "properties": {
+         "publisher": "Microsoft.Azure.Extensions",
+         "type": "customScript",
+         "typeHandlerVersion": "2.0",
+         "autoUpgradeMinorVersion": true,
+         "settings": {
+         "fileUris": [
+         "https://raw.githubusercontent.com/MicrosoftDocs/mslearn-welcome-to-azure/master/configure-nginx.sh"
+         ]
+            },
+            "protectedSettings": {
+            "commandToExecute": "./configure-nginx.sh"
+            }
+           },
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+            ]
+         },
       {
         "type": "Microsoft.Storage/storageAccounts",
         "apiVersion": "2018-11-01",
