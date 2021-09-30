@@ -1,3 +1,2 @@
 # Azure
-Azure Resource Manager Templates
-Azure Powershell hacks
+Azure Resource Manager Templates, Azure Powershell hacks
