@@ -16,8 +16,7 @@ param (
 )
 
 # Connect to Azure with authenticated account
-Connect-AzAccount
-Set-AzContext -SubscriptionId $subscriptionID -Tenant $tenantID
+Connect-AzAccount -SubscriptionId $subscriptionID -Tenant $tenantID
 
 # Get the NSG resource
 $nsg = Get-AzNetworkSecurityGroup -Name $nsgname -ResourceGroupName $RGname
