@@ -1,5 +1,5 @@
 # Azure
 Azure Resource Manager Templates, Azure Powershell hacks
 
-# Data
+# Analytics
 Python munge code blocks, Experimental R hacks
