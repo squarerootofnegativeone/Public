@@ -1,13 +1,17 @@
 # Deploy KeyVault with randomised name to a Resource Group
 
-# Define a parameter to store Resource Group where KeyVault is to be deployed
+# Define parameters
 param (
     [Parameter(Mandatory=$true)]
-    [string]$ResourceGroup
+    [string]$ResourceGroup,
+    [Parameter(Mandatory=$true)]
+    [string]$TenandId,
+    [Parameter(Mandatory=$true)]
+    [string]$SubscriptionId
 )
 
 # Connect to Azure
-Connect-AzAccount -TenantId <# Tenant ID #> -SubscriptionId <# Subscrition ID #>
+Connect-AzAccount -TenantId $TenandId -SubscriptionId $SubscriptionId
 
 # Get location of RG - dunno is this is strictly necessary for New-AzKeyVault
 $rg = Get-AzResourceGroup -Name $ResourceGroup
