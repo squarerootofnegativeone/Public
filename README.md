@@ -1,5 +1,1 @@
-# Azure
-Azure Resource Manager Templates, Azure Powershell hacks
-
-# Analytics
-Python munge code blocks, Experimental R hacks
+A collection of really bad Azure code hacks. _Caveat Emptor_
