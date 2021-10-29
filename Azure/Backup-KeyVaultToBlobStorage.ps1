@@ -19,17 +19,17 @@ This Azure Automation PowerShell runbook automates backup of keys and certificat
 	For this reason a container dedicated to KV backups must be used with this script.
 
 .OUTPUTS
-	Human-readable informational and error messages produced during the job. Not intended to be consumed by another runbook.
+	Human-readable information and error messages produced during the run. Not intended to be consumed by another runbook.
 
 .NOTES
     Hacked together from the interwebs...
-    LASTEDIT: Oct 21, 2021 
-    VERSION: 1.0
+    LASTEDIT: Oct 28, 2021 
+    VERSION: 0.3
 #>
 
 param(
     [parameter(Mandatory=$true)]
-	[String] $KeyVaultName,
+    [String] $KeyVaultName,
     [parameter(Mandatory=$true)]
     [String]$StorageAccountName,
     [parameter(Mandatory=$true)]
@@ -41,7 +41,6 @@ param(
 )
 
 $ErrorActionPreference = 'stop'
-$backupFolder = "$env:temp\kvb"
 
 function Login() {
 	$connectionName = "AzureRunAsConnection"
@@ -51,7 +50,7 @@ function Login() {
 
 		Write-Verbose "Logging in to Azure..." -Verbose
 
-		Add-AzAccount `
+		Connect-AzAccount `
 			-ServicePrincipal `
 			-TenantId $servicePrincipalConnection.TenantId `
 			-ApplicationId $servicePrincipalConnection.ApplicationId `
@@ -119,9 +118,12 @@ function Remove-OldBackups([int]$retentionDays, [string]$blobContainerName, $sto
 
 Write-Verbose "Starting Key Vault backup" -Verbose
 
+$backupFolder = "$env:TEMP\"
+
 $StorageContext = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageKey
 
 Login
+
 Import-Module Az.KeyVault
 
 backup-keyVaultItems -keyvaultName $KeyVaultName -storageContext $StorageContext -blobContainerName $BlobContainerName
