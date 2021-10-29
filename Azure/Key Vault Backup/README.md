@@ -11,7 +11,7 @@ This Azure Automation Runbook automates the backup of items in an Azure Key Vaul
     Specifies the name of the Key Valut for backup
 
 ### StorageAccountName
-    Specifies the name of the storae account that will hold backup files
+    Specifies the name of the storage account that will hold backup files
 
 ### StorageKey
 	Specifies the storage key of the storage account
