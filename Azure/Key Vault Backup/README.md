@@ -24,6 +24,8 @@
 	Human-readable informational and error messages produced during execution. Not intended to be consumed by another runbook.
 
 ## NOTES
-    Hacked together from the interwebs...
-    LASTEDIT: Oct 28, 2021 
-    VERSION: 0.3
+    Requires Azure Automation Account to have an Azure Run As account with default AzureRunAsConnection
+    (see https://docs.microsoft.com/en-us/azure/automation/create-run-as-account)
+
+    Key Vault needs an Access Policy to allow the Azure Run As account to do anything useful with the vault
+    (see https://docs.microsoft.com/en-us/azure/key-vault/general/assign-access-policy)
