@@ -23,5 +23,5 @@ $rnd = ""; do { $rnd = $rnd + ((0x30..0x39) + (0x41..0x5A) + (0x61..0x7A) | Get-
 # Concatenate kv and random string to generate name for new Key Vault
 $kvname = "kv"+$rnd
 
-# No prizese for guessing what this cmdlet does...
+# No prizes for guessing what this cmdlet does...
 New-AzKeyvault -name $kvname -ResourceGroupName $ResourceGroup -Location $rg.location -EnabledForDiskEncryption
