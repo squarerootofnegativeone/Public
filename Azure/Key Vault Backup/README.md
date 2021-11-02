@@ -24,6 +24,3 @@ This Azure Automation Runbook automates the backup of items in an Azure Key Vaul
 	Specifies the number of days backups are kept in blob storage. Script will remove all older files from container.
     For this reason a container dedicated to KV backups must be used with this script.
 
-## OUTPUTS
-	Human-readable informational and error messages produced during execution. Not intended to be consumed by another runbook.
-
