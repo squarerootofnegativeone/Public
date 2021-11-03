@@ -119,15 +119,11 @@ function Remove-OldBackups([int]$retentionDays, [string]$blobContainerName, $sto
 Write-Verbose "Starting Key Vault backup" -Verbose
 
 $backupFolder = "$env:TEMP\"
-
 $StorageContext = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageKey
 
 Login
-
 Import-Module Az.KeyVault
-
 backup-keyVaultItems -keyvaultName $KeyVaultName -storageContext $StorageContext -blobContainerName $BlobContainerName
-
 Remove-OldBackups -retentionDays $RetentionDays -storageContext $StorageContext -blobContainerName $BlobContainerName
 
 Write-Verbose "Azure KeyVault backup script finished." -Verbose
