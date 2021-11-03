@@ -118,7 +118,7 @@ function Remove-OldBackups([int]$retentionDays, [string]$blobContainerName, $sto
 
 Write-Verbose "Starting Key Vault backup" -Verbose
 
-$backupFolder = "$env:TEMP\"
+$backupFolder = "$env:TEMP\azkv"
 $StorageContext = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageKey
 
 Login
