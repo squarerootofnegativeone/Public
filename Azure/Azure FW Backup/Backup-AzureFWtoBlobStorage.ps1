@@ -109,7 +109,8 @@ $backupFolder = "$env:TEMP\azfw\"
 $StorageContext = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageKey
 
 Login
-Import-Module Az.KeyVault
+Import-Module Az.Network
+Import-Module Az.Resources
 backup-azFirewall -keyvaultName $KeyVaultName -storageContext $StorageContext -blobContainerName $BlobContainerName
 Remove-OldBackups -retentionDays $RetentionDays -storageContext $StorageContext -blobContainerName $BlobContainerName
 
