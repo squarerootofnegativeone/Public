@@ -1,7 +1,7 @@
 # Azure Key Vault Items Backup
 This Azure Automation Runbook automates the backup of items in an Azure Key Vault to blob storage. Also deletes previous backups older than specified retention date.
 
-* Requires Azure Automation Account to have an [Azure Run As account](https://docs.microsoft.com/en-us/azure/automation/create-run-as-account) with default AzureRunAsConnection connection
+* Requires Azure Automation Account to have an [Azure Run As account](https://docs.microsoft.com/en-us/azure/automation/create-run-as-account) with default `AzureRunAsConnection` connection
 * Key Vault needs an [Access Policy](https://docs.microsoft.com/en-us/azure/key-vault/general/assign-access-policy) to allow the Azure Run As account to do anything useful with the vault
 
 :rocket:
@@ -23,7 +23,4 @@ This Azure Automation Runbook automates the backup of items in an Azure Key Vaul
 ### RetentionDays
 	Specifies the number of days backups are kept in blob storage. Script will remove all older files from container.
     For this reason a container dedicated to KV backups must be used with this script.
-
-## OUTPUTS
-	Human-readable informational and error messages produced during execution. Not intended to be consumed by another runbook.
 
