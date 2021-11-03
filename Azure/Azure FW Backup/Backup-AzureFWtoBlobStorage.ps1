@@ -1,9 +1,12 @@
 <#
 .DESCRIPTION
-This Azure Automation PowerShell runbook automates backup of keys and certificates from Azure Key Vault to Blob storage and deletes old backups from blob storage
+This Azure Automation PowerShell runbook automates backup of Azure Firewall configuration to Blob storage and deletes old backups from blob storage
 
-.PARAMETER AzureKeyVaultName
-	Specifies the name of the Azure Key Vault which script will backup
+.PARAMETER ResourceGroupName
+	Specifies the name of the resource group where the Azure Firewall is located
+
+.PARAMETER FirewallName
+	Specifies the name of the Azure Firewall which script will backup
 	
 .PARAMETER StorageAccountName
 	Specifies the name of the storage account where backup file will be uploaded
@@ -16,27 +19,29 @@ This Azure Automation PowerShell runbook automates backup of keys and certificat
 
 .PARAMETER RetentionDays
 	Specifies the number of days backups are kept in blob storage. Script will remove all older files from container. 
-	For this reason a container dedicated to KV backups must be used with this script.
+	For this reason a container dedicated to Firewall backups must be used with this script.
 
 .OUTPUTS
 	Human-readable information and error messages produced during the run. Not intended to be consumed by another runbook.
 
 .NOTES
-    Hacked together from the interwebs...
-    LASTEDIT: Oct 28, 2021 
-    VERSION: 0.3
+    Heavily based on https://github.com/francescomolfese/Microsoft/tree/master/Azure%20Firewall%20Backup
+    LASTEDIT: Nov 3, 2021 
+    VERSION: 0.1
 #>
 
 param(
     [parameter(Mandatory=$true)]
-    [String] $KeyVaultName,
+    [String] $ResourceGroupName,
+    [parameter(Mandatory=$true)]
+    [String] $FirewallName,
     [parameter(Mandatory=$true)]
     [String]$StorageAccountName,
     [parameter(Mandatory=$true)]
     [String]$StorageKey,
-    [parameter(Mandatory=$true)]
+	[parameter(Mandatory=$true)]
     [string]$BlobContainerName,
-    [parameter(Mandatory=$true)]
+	[parameter(Mandatory=$true)]
     [Int32]$RetentionDays
 )
 
@@ -68,42 +73,24 @@ function Login() {
 	}
 }
 
-function backup-keyVaultItems([string]$KeyVaultName, [string]$blobContainerName, $storageContext) {
+function backup-azFirewall([string]$FirewallName, [string]$blobContainerName, $storageContext) {
 
     If ((test-path $backupFolder)) {
         Remove-Item $backupFolder -Recurse -Force
     }
     
-    New-Item -ItemType Directory -Force -Path "$($backupFolder)\$($keyvaultName)" | Out-Null
+    New-Item -ItemType Directory -Force -Path "$($backupFolder)\$($FirewallName)" | Out-Null
 
-    Write-Verbose "Starting backup of KeyVault to temp directory." -Verbose
+    Write-Verbose "Starting backup of Azure Firewall to temp directory." -Verbose
 
-    $certificates = Get-AzKeyVaultCertificate -VaultName $keyvaultName 
-    foreach ($cert in $certificates) {
-        Backup-AzKeyVaultCertificate -Name $cert.name -VaultName $keyvaultName -OutputFile "$backupFolder\$keyvaultName\certificate-$($cert.name)" | Out-Null
-    }
+    $BackupFilename = $FirewallName + (Get-Date).ToString("yyyyMMddHHmm") + ".json"
+    $BackupFilePath = ($backupFolder + $BackupFilename)
+    $AzureFirewallId = (Get-AzFirewall -Name $FirewallName -ResourceGroupName $resourceGroupName).id
+
+    Export-AzResourceGroup -ResourceGroupName $resourceGroupName -Resource $AzureFirewallId -SkipAllParameterization -Path $BackupFilePath
     
-    $secrets = Get-AzKeyVaultSecret -VaultName $keyvaultName
-    foreach ($secret in $secrets) {
-        #Exclude any secrets automatically generated when creating a cert, as these cannot be backed up   
-        if (! ($certificates.Name -contains $secret.name)) {
-            Backup-AzKeyVaultSecret -Name $secret.name -VaultName $keyvaultName -OutputFile "$backupFolder\$keyvaultName\secret-$($secret.name)" | Out-Null
-        }
-    }
-    
-    $keys = Get-AzKeyVaultKey -VaultName $keyvaultName
-    foreach ($kvkey in $keys) {
-        #Exclude any keys automatically generated when creating a cert, as these cannot be backed up   
-        if (! ($certificates.Name -contains $kvkey.name)) {
-            Backup-AzKeyVaultKey -Name $kvkey.name -VaultName $keyvaultName -OutputFile "$backupFolder\$keyvaultName\key-$($kvkey.name)" | Out-Null
-        }
-    }
-
-    Write-Verbose "Exporting Azure Key Vault backup to storage blob" -Verbose
-
-    foreach ($file in (get-childitem "$($backupFolder)\$($KeyVaultName)")) {
-        Set-AzStorageBlobContent -File $file.FullName -Container $BlobContainerName -Blob $file.name -Context $StorageContext -Force -ErrorAction SilentlyContinue
-    }
+    Write-Verbose "Exporting Azure Firewall backup to storage blob" -Verbose
+    Set-AzStorageBlobContent -File $BackupFilePath -Blob $BackupFilename -Container $blobContainerName -Context $storageContext -Force -ErrorAction SilentlyContinue
 }
 
 function Remove-OldBackups([int]$retentionDays, [string]$blobContainerName, $storageContext) {
@@ -116,18 +103,14 @@ function Remove-OldBackups([int]$retentionDays, [string]$blobContainerName, $sto
 	}
 }
 
-Write-Verbose "Starting Key Vault backup" -Verbose
+Write-Verbose "Starting Firewall backup" -Verbose
 
-$backupFolder = "$env:TEMP\"
-
+$backupFolder = "$env:TEMP\azfw\"
 $StorageContext = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageKey
 
 Login
-
 Import-Module Az.KeyVault
-
-backup-keyVaultItems -keyvaultName $KeyVaultName -storageContext $StorageContext -blobContainerName $BlobContainerName
-
+backup-azFirewall -keyvaultName $KeyVaultName -storageContext $StorageContext -blobContainerName $BlobContainerName
 Remove-OldBackups -retentionDays $RetentionDays -storageContext $StorageContext -blobContainerName $BlobContainerName
 
-Write-Verbose "Azure KeyVault backup script finished." -Verbose
+Write-Verbose "Azure Firewall backup script finished." -Verbose
