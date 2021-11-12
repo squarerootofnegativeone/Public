@@ -2,6 +2,9 @@
 .DESCRIPTION
 This Azure Automation PowerShell runbook automates backup of Azure Firewall configuration to Blob storage and deletes old backups from blob storage
 
+.PARAMETER SubscriptionName
+	Specifies the name of the subscription where the Azure Firewall is located
+
 .PARAMETER ResourceGroupName
 	Specifies the name of the resource group where the Azure Firewall is located
 
@@ -31,7 +34,9 @@ This Azure Automation PowerShell runbook automates backup of Azure Firewall conf
 #>
 
 param(
-    [parameter(Mandatory=$true)]
+	[parameter(Mandatory=$true)]
+    [String] $SubscriptionName,
+   [parameter(Mandatory=$true)]
     [String] $ResourceGroupName,
     [parameter(Mandatory=$true)]
     [String] $FirewallName,
@@ -58,6 +63,7 @@ function Login() {
 		Connect-AzAccount `
 			-ServicePrincipal `
 			-TenantId $servicePrincipalConnection.TenantId `
+			-Subscription $servicePrincipalConnection.SubscriptionName `
 			-ApplicationId $servicePrincipalConnection.ApplicationId `
 			-CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint | Out-Null
 	}
