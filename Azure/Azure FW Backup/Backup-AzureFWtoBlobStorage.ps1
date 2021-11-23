@@ -35,8 +35,6 @@ This Azure Automation PowerShell runbook automates backup of Azure Firewall conf
 
 param(
 	[parameter(Mandatory=$true)]
-    [String] $SubscriptionName,
-   [parameter(Mandatory=$true)]
     [String] $ResourceGroupName,
     [parameter(Mandatory=$true)]
     [String] $FirewallName,
@@ -44,9 +42,9 @@ param(
     [String]$StorageAccountName,
     [parameter(Mandatory=$true)]
     [String]$StorageKey,
-	[parameter(Mandatory=$true)]
+    [parameter(Mandatory=$true)]
     [string]$BlobContainerName,
-	[parameter(Mandatory=$true)]
+    [parameter(Mandatory=$true)]
     [Int32]$RetentionDays
 )
 
@@ -63,7 +61,6 @@ function Login() {
 		Connect-AzAccount `
 			-ServicePrincipal `
 			-TenantId $servicePrincipalConnection.TenantId `
-			-Subscription $servicePrincipalConnection.SubscriptionName `
 			-ApplicationId $servicePrincipalConnection.ApplicationId `
 			-CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint | Out-Null
 	}
