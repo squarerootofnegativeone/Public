@@ -6,6 +6,9 @@ This Azure Automation Runbook automates the backup of an Azure Firewall to blob 
 :joystick:
 
 ## PARAMETERS
+### Subscription Name
+    Specifies the name of the subscription where the Azure Firewall is located
+
 ### Resource Group Name
     Specifies the name of the resource group where the Azure Firewall is located
     
