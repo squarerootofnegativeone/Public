@@ -1,0 +1,1 @@
+Custom Role to allow Start, Restart and Stop of Azure VM
